@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel
 import logging
+import uuid
 
 app = FastAPI()
 
@@ -41,11 +42,13 @@ def create_payment(
             status_code=400,
             detail="Amount must be greater than zero"
         )
+    transaction_id = f"txn_{uuid.uuid4().hex[:8]}"
     logging.info(
-        f"Payment approved: {payment.amount} {payment.currency}"
+        f"Payment approved:{transaction_id} - {payment.amount} {payment.currency}"
     )
     
     return{
+        "transaction_id" : transaction_id,
         "status" : "aproved",
         "amount" : payment.amount,
         "currency": payment.currency
